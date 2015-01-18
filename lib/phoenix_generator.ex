@@ -22,9 +22,13 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
   @shortdoc "Generate a controller for a Phoenix Application"
 
   def run(opts) do
-    {_switches, [controller_name | actions], _files} = OptionParser.parse opts
+    {switches, [controller_name | actions], _files} = OptionParser.parse opts
     controller_name_camel = camelize controller_name
     app_name_camel = camelize Atom.to_string(Mix.Project.config()[:app])
+
+    if Keyword.get switches, :crud do
+      actions = actions ++ ~w[index show new edit create update destroy]
+    end
 
     bindings = [
       app_name: app_name_camel,
@@ -45,6 +49,11 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       bindings)
 
     # generate a template for each action
+    if Keyword.get switches, :crud do
+      # do not generate templates for create, update or destroy
+      # if they were added wih --crud
+      actions = Enum.take actions, length(actions)-3
+    end
     for action <- actions do
       bindings = bindings ++ [action_name: action,
                    template_path: Path.join(
