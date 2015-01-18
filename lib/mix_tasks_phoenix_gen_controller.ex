@@ -39,9 +39,11 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       actions = Enum.take actions, length(actions)-3
     end
     for action <- actions do
-      bindings = bindings ++ [action_name: action,
-                   template_path: Path.join(
-                     ["web","templates",controller_name,"#{action}.html.eex"])]
+      bindings = bindings ++ [
+        action_name: action,
+        template_path: Path.join(
+          ["web","templates",controller_name,"#{action}.html.eex"])
+      ]
       gen_file(
         ["action.html.eex.eex"],
         ["templates", controller_name, "#{action}.html.eex"],
