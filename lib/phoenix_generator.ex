@@ -1,0 +1,2 @@
+defmodule PhoenixGenerator do
+end
