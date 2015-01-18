@@ -1,0 +1,3 @@
+defmodule <%= app_name %>.<%= controller_name %>View do
+  use <%= app_name %>.View
+end

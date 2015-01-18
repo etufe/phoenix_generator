@@ -1,0 +1,12 @@
+defmodule <%= app_name %>.<%= controller_name %>Controller do
+  use Phoenix.Controller
+
+  plug :action
+
+<%= for action <- actions do %>
+  def <%= action %>(conn, _params) do
+    render conn, :<%= action %>
+  end
+<% end %>
+end
+

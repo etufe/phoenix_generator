@@ -1,0 +1,5 @@
+<div class="well">
+  I am an empty template for
+  <strong><%= app_name %>.<%= controller_name %>.<%= action_name %></strong><br>
+  Find me at: <strong><%= template_path %></strong>
+</div>
