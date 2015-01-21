@@ -1,3 +1,10 @@
-defmodule <%= app_name %>.<%= model_name %> do
+defmodule <%= app_name %>.<%= model_name_camel %> do
   use Ecto.Model
+
+  schema "<%= model_name_under %>" do
+<%= for [field_name, field_type] <- fields do %>
+      field :<%= field_name %>, :<%= field_type %>
+<% end %>
+  end
+
 end
