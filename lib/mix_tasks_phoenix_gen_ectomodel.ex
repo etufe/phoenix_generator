@@ -6,9 +6,14 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   @shortdoc "Generate an Ecto Model for a Phoenix Application"
 
   def run(opts) do
-    {_switches, [model_name | fields], _files} = OptionParser.parse opts
+    {switches, [model_name | fields], _files} = OptionParser.parse opts
     model_name_camel = camelize model_name
     app_name_camel = camelize Atom.to_string(Mix.Project.config()[:app])
+
+    if Keyword.get switches, :timestamps do
+      fields = fields ++ ["created_at:datetime", "updated_at:datetime"]
+    end
+
     fields = for field <- fields do
       case String.split(field, ":") do
         [name]             -> [name, ""]
