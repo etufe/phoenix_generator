@@ -72,25 +72,36 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
       end <> ", \\\n"
     end
     migration_up = migration_up <> ")\""
-    migration_down = "\"DROP TABLE #{model_name};\""
+    migration_down = "\"DROP TABLE #{model_name}\""
     migration_name = "create_#{pluralize model_name}_table"
 
     case Keyword.get switches, :repo do
       nil ->
         info """
-        Generate a migration with:"
-          mix ecto.gen.migration *your_repo_name* #{migration_name}"
+        Generate a migration with:
+          mix ecto.gen.migration *your_repo_name* #{migration_name}
         UP:
         #{migration_up}
 
         DOWN:
-        migration_down
+        #{migration_down}
         """
       repo ->
         if Mix.Task.task? Mix.Tasks.Ecto.Gen.Migration do
           Mix.Task.run Ecto.Gen.Migration, [repo, migration_name]
-          info "Warning: Migrations are poorly tested, please check before running!"
+          migration_path = Path.join ~w|priv repo migrations|
+          migration_file = migration_path |> File.ls! |> List.last
+          migration = File.read! Path.join [migration_path, migration_file]
+          migration = Regex.replace ~r/up do\n/s,
+                        migration,
+                        Regex.escape("up do\n" <> pad_string(migration_up, "    ") <> "\n")
+          migration = Regex.replace ~r/down do\n/s,
+                        migration,
+                        Regex.escape("down do\n" <> pad_string(migration_down, "    ") <> "\n")
+          File.write! Path.join([migration_path, migration_file]), migration
+
           info "Run your migration with: mix ecto.migrate #{repo}"
+          info "Warning: Migrations are poorly tested, please check before running!"
         else
           error "You specified a repo but don't have Ecto."
           error "Please include ecto in your project dependencies."

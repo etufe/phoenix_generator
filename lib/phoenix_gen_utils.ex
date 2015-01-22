@@ -12,4 +12,10 @@ defmodule Phoenix.Gen.Utils do
 
     Mix.Generator.create_file(dst_path, rendered_file)
   end
+
+
+  @doc "adds a pading to the begining of lines in a string"
+  def pad_string(str, padding) when is_binary str do
+     padding <> String.replace(str, ~r/\n/s, ("\n"<>padding))
+  end
 end
