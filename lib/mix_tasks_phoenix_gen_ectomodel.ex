@@ -13,6 +13,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     ## Command line options
 
       * `--timestamps` - adds created_at:datetime and updated_at:datetime fields
+      * `--repo=RepoName` - creates a migration if you specify a repo
 
     ## Examples
 
@@ -52,11 +53,12 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
       bindings)
 
     # generate the migration
-    import Mix.Shell.IO, only: [info: 1]
+    import Mix.Shell.IO, only: [info: 1, error: 1]
     import Inflex, only: [pluralize: 1]
-    migration_text = "\"CREATE TABLE #{pluralize model_name}( \\\n"
-    migration_text = migration_text <> "  id serial primary key \\\n"
-    migration_text = migration_text <> for [name, type] <- fields, into: "" do
+
+    migration_up = "\"CREATE TABLE #{pluralize model_name}( \\\n"
+    migration_up = migration_up <> "  id serial primary key \\\n"
+    migration_up = migration_up <> for [name, type] <- fields, into: "" do
       #TODO binary, uuid, array, decimal
       "  #{name} " <> case type do
         "integer"       -> "bigint"
@@ -69,14 +71,31 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
         other           -> other
       end <> ", \\\n"
     end
-    migration_text = migration_text <> ")\""
+    migration_up = migration_up <> ")\""
+    migration_down = "\"DROP TABLE #{model_name};\""
+    migration_name = "create_#{pluralize model_name}_table"
 
-    info "Generate a migration with:"
-    info "    mix ecto.gen.migration *your_repo_name* create_#{pluralize model_name}_table"
-    info "UP:"
-    info migration_text
-    info ""
-    info "DOWN:"
-    info "\"DROP TABLE #{model_name};\""
+    case Keyword.get switches, :repo do
+      nil ->
+        info """
+        Generate a migration with:"
+          mix ecto.gen.migration *your_repo_name* #{migration_name}"
+        UP:
+        #{migration_up}
+
+        DOWN:
+        migration_down
+        """
+      repo ->
+        if Mix.Task.task? Mix.Tasks.Ecto.Gen.Migration do
+          Mix.Task.run Ecto.Gen.Migration, [repo, migration_name]
+          info "Warning: Migrations are poorly tested, please check before running!"
+          info "Run your migration with: mix ecto.migrate #{repo}"
+        else
+          error "You specified a repo but don't have Ecto."
+          error "Please include ecto in your project dependencies."
+          error "https://github.com/elixir-lang/ecto"
+        end
+    end
   end
 end
