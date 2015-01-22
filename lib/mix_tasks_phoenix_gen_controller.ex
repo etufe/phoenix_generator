@@ -4,6 +4,19 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
   import Mix.Utils, only: [camelize: 1]
 
   @shortdoc "Generate a controller for a Phoenix Application"
+  @moduledoc """
+  Generates a Controller
+
+      mix phoenix.gen.controller controller_name action
+
+    ## Command line options
+
+      * `--crud` - adds index, show, new, edit, create, update and destroy actions
+
+    ## Examples
+
+      mix phoenix.gen.controller post recent --crud
+  """
 
   def run(opts) do
     {switches, [controller_name | actions], _files} = OptionParser.parse opts

@@ -5,6 +5,20 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
 
   @shortdoc "Generate an Ecto Model for a Phoenix Application"
 
+  @moduledoc """
+  Generates an Ecto Model
+
+      mix phoenix.gen.ectomodel model\_name field\_name:field\_type
+
+    ## Command line options
+
+      * `--timestamps` - adds created_at:datetime and updated_at:datetime fields
+
+    ## Examples
+
+      mix phoenix.gen.ectomodel user first_name:string age:integer --timestamps
+  """
+
   def run(opts) do
     {switches, [model_name | fields], _files} = OptionParser.parse opts
     model_name_camel = camelize model_name
