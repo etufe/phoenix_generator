@@ -30,8 +30,10 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
 
     fields = for field <- fields do
       case String.split(field, ":") do
-        [name]             -> [name, ""]
+        [name]             -> [name, "string"]
         [name, "datetime"] -> [name, "datetime, default: Ecto.DateTime.utc"]
+        [name, "date"]     -> [name, "date, default: Ecto.Date.utc"]
+        [name, "time"]     -> [name, "time, default: Ecto.Time.utc"]
         [name, type]       -> [name, type]
       end
     end
@@ -48,5 +50,33 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
       ["ectomodel.ex.eex"],
       ["models", "#{model_name}.ex"],
       bindings)
+
+    # generate the migration
+    import Mix.Shell.IO, only: [info: 1]
+    import Inflex, only: [pluralize: 1]
+    migration_text = "\"CREATE TABLE #{pluralize model_name}( \\\n"
+    migration_text = migration_text <> "  id serial primary key \\\n"
+    migration_text = migration_text <> for [name, type] <- fields, into: "" do
+      #TODO binary, uuid, array, decimal
+      "  #{name} " <> case type do
+        "integer"       -> "bigint"
+        "float"         -> "float8"
+        "boolean"       -> "boolean"
+        "string"        -> "text"
+        "datetime" <> _ -> "timestamptz"
+        "date" <> _     -> "date"
+        "time" <> _     -> "timetz"
+        other           -> other
+      end <> ", \\\n"
+    end
+    migration_text = migration_text <> ")\""
+
+    info "Generate a migration with:"
+    info "    mix ecto.gen.migration *your_repo_name* create_#{pluralize model_name}_table"
+    info "UP:"
+    info migration_text
+    info ""
+    info "DOWN:"
+    info "\"DROP TABLE #{model_name};\""
   end
 end
