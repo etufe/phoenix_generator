@@ -18,4 +18,8 @@ defmodule Phoenix.Gen.Utils do
   def pad_string(str, padding) when is_binary str do
      padding <> String.replace(str, ~r/\n/s, ("\n"<>padding))
   end
+
+  def app_name_camel() do
+    Mix.Utils.camelize Atom.to_string(Mix.Project.config()[:app])
+  end
 end
