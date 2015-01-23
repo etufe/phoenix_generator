@@ -19,6 +19,7 @@ defmodule Phoenix.Gen.Utils do
      padding <> String.replace(str, ~r/\n/s, ("\n"<>padding))
   end
 
+  @doc "returns the enclosing app's name camel case"
   def app_name_camel() do
     Mix.Utils.camelize Atom.to_string(Mix.Project.config()[:app])
   end

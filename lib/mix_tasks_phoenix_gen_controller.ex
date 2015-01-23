@@ -1,7 +1,6 @@
 defmodule Mix.Tasks.Phoenix.Gen.Controller do
   use Mix.Task
   import Phoenix.Gen.Utils
-  import Mix.Utils, only: [camelize: 1]
 
   @shortdoc "Generate a controller for a Phoenix Application"
   @moduledoc """
@@ -20,8 +19,6 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
   def run(opts) do
     {switches, [controller_name | actions], _files} = OptionParser.parse opts
-    controller_name_camel = camelize controller_name
-    app_name_camel = camelize Atom.to_string(Mix.Project.config()[:app])
 
     if Keyword.get switches, :crud do
       actions = actions ++ ~w[index show new edit create update destroy]
@@ -29,7 +26,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
     bindings = [
       app_name: app_name_camel,
-      controller_name: controller_name_camel,
+      controller_name: Mix.Utils.camelize(controller_name),
       actions: actions
     ]
 

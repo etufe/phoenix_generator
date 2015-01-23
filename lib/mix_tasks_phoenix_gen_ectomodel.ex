@@ -22,9 +22,8 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   def run(opts) do
     {switches, [model_name | fields], _files} = OptionParser.parse opts
 
-    if Keyword.get switches, :timestamps do
+    if Keyword.get(switches, :timestamps), do:
       fields = fields ++ ["created_at:datetime", "updated_at:datetime"]
-    end
 
     bindings = [
       app_name: app_name_camel,
