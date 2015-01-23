@@ -11,6 +11,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
     ## Command line options
 
       * `--crud` - adds index, show, new, edit, create, update and destroy actions
+      * `--skip-view` - don't generate a view or any templates
 
     ## Examples
 
@@ -36,28 +37,22 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       ["controllers", "#{controller_name}_controller.ex"],
       bindings)
 
-    # generate the view file
-    gen_file(
-      ["view.ex.eex"],
-      ["views", "#{controller_name}_view.ex"],
-      bindings)
-
-    # generate a template for each action
-    if Keyword.get switches, :crud do
-      # do not generate templates for create, update or destroy
-      # if they were added wih --crud
-      actions = Enum.take actions, length(actions)-3
-    end
-    for action <- actions do
-      bindings = bindings ++ [
-        action_name: action,
-        template_path: Path.join(
-          ["web","templates",controller_name,"#{action}.html.eex"])
-      ]
+    unless Keyword.get switches, :skip_view do
+      # generate the view file
       gen_file(
-        ["action.html.eex.eex"],
-        ["templates", controller_name, "#{action}.html.eex"],
+        ["view.ex.eex"],
+        ["views", "#{controller_name}_view.ex"],
         bindings)
+
+      # generate a template for each action
+      if Keyword.get switches, :crud do
+        # do not generate templates for create, update or destroy
+        # if they were added wih --crud
+        actions = Enum.take actions, length(actions)-3
+      end
+      for action <- actions do
+        Mix.Tasks.Phoenix.Gen.Template.run [controller_name, action]
+      end
     end
   end
 
