@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
     ## Command line options
 
-      * `--crud` - adds index, show, new, edit, create, update and destroy actions
+      * `--crud` - adds index, show, new, edit, create, update and delete actions
       * `--skip-view` - don't generate a view or any templates
       * '--skip-route' - don't add the route if --crud was specified
 
@@ -23,7 +23,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
     {switches, [controller_name | actions], _files} = OptionParser.parse opts
 
     if Keyword.get switches, :crud do
-      actions = actions ++ ~w[index show new edit create update destroy]
+      actions = actions ++ ~w[index show new edit create update delete]
     end
 
     bindings = [
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
       # generate a template for each action
       if Keyword.get switches, :crud do
-        # do not generate templates for create, update or destroy
+        # do not generate templates for create, update or delete
         # if they were added wih --crud
         actions = Enum.take actions, length(actions)-3
       end
@@ -62,7 +62,8 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
   defp add_resources_route(controller_name) do
     router_path = Path.join ~w|web router.ex|
     contents = File.read! router_path
-    [_ | captures] = Regex.run(~r/(.*pipe_through :browser(?:(?!end).)*\n)(.*)/s,
+    # [_ | captures] = Regex.run(~r/(.*pipe_through :browser.*(?!end)\n)(.?end.*)/s,
+    [_ | captures] = Regex.run(~r/(.*pipe_through :browser(?(?!end).)*\n)(.*)/s,
                                contents)
     contents = Enum.join captures, resources_route(controller_name)
     File.write! router_path, contents
