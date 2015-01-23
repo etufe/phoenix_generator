@@ -16,7 +16,7 @@ defmodule Phoenix.Gen.Utils do
 
   @doc "adds a pading to the begining of lines in a string"
   def pad_string(str, padding) when is_binary str do
-     padding <> String.replace(str, ~r/\n/s, ("\n"<>padding))
+     padding <> String.replace(str, ~r/(?!\n$)\n/s, ("\n"<>padding))
   end
 
   @doc "returns the enclosing app's name camel case"

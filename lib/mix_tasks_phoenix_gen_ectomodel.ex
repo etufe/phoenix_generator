@@ -104,18 +104,15 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     if Mix.Task.task? Mix.Tasks.Ecto.Gen.Migration do
       Mix.Task.run Ecto.Gen.Migration, [repo, migration_name(model_name)]
       #TODO make sure task was successful and we have the right file
-      path = Path.join ~w|priv repo migrations|
-      file = path |> File.ls! |> List.last
-      up = migration_up model_name, fields
-      down = migration_down model_name
-      contents = File.read! Path.join [path, file]
-      contents = Regex.replace ~r/up do\n/s,
-                    contents,
-                    Regex.escape("up do\n" <> pad_string(up, "    ") <> "\n")
-      contents = Regex.replace ~r/down do\n/s,
-                    contents,
-                    Regex.escape("down do\n" <> pad_string(down, "    ") <> "\n")
-      File.write! Path.join([path, file]), contents
+      path     = Path.join ~w|priv repo migrations|
+      path     = Path.join path, (path |> File.ls! |> List.last)
+      up       = migration_up model_name, fields
+      down     = migration_down model_name
+      contents = File.read! path
+      [_, top, mid, bot] = Regex.run ~r/(.*up do\n)(.*down do\n)(.*)/s, contents
+      contents = top <> pad_string(up, "    ") <>
+                 mid <> pad_string(down, "    ") <> bot
+      File.write! path, contents
       :ok
     else
       {:error, :no_ecto}
@@ -132,12 +129,12 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     "\"CREATE TABLE #{Inflex.pluralize model_name}( \\\n" <>
     "  id serial primary key \\\n" <>
     "#{migration_field_lines(fields)}" <>
-    ")\""
+    ")\"\n"
   end
 
   # Returns text for migration down
   defp migration_down(model_name) do
-    "\"DROP TABLE #{Inflex.pluralize model_name}\""
+    "\"DROP TABLE #{Inflex.pluralize model_name}\"\n"
   end
 
   # takes [[field_name, postgres_type]...]
