@@ -12,6 +12,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
       * `--crud` - adds index, show, new, edit, create, update and destroy actions
       * `--skip-view` - don't generate a view or any templates
+      * '--skip-route' - don't add the route if --crud was specified
 
     ## Examples
 
@@ -51,6 +52,24 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
         Mix.Tasks.Phoenix.Gen.Template.run [controller_name, action]
       end
     end
+
+    unless Keyword.get switches, :skip_route do
+      add_resources_route controller_name
+    end
   end
 
+
+  defp add_resources_route(controller_name) do
+    router_path = Path.join ~w|web router.ex|
+    contents = File.read! router_path
+    [_ | captures] = Regex.run(~r/(.*pipe_through :browser(?:(?!end).)*\n)(.*)/s,
+                               contents)
+    contents = Enum.join captures, resources_route(controller_name)
+    File.write! router_path, contents
+  end
+
+  defp resources_route(controller_name) do
+    "    resources \"/#{Inflex.pluralize controller_name}\", " <>
+    "#{Mix.Utils.camelize controller_name}Controller\n"
+  end
 end
