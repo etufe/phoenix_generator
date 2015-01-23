@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
 
       mix phoenix.gen.ectomodel user first_name:string age:integer --timestamps
   """
-
+  # TODO make AppName.Repo the default
   def run(opts) do
     {switches, [model_name | fields], _files} = OptionParser.parse opts
 
