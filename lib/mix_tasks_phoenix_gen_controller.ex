@@ -39,10 +39,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
 
     unless Keyword.get switches, :skip_view do
       # generate the view file
-      gen_file(
-        ["view.ex.eex"],
-        ["views", "#{controller_name}_view.ex"],
-        bindings)
+      Mix.Tasks.Phoenix.Gen.View.run [controller_name]
 
       # generate a template for each action
       if Keyword.get switches, :crud do
