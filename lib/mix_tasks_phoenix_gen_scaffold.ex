@@ -6,9 +6,10 @@ defmodule Mix.Tasks.Phoenix.Gen.Scaffold do
   @moduledoc """
   Generates a Controller/Model/View/Template scaffold
 
-      mix phoenix.gen.scaffold resource_name field_name:field_type --repo:repo_name
+      mix phoenix.gen.scaffold resource_name field_name:field_type
 
     ## Command line options
+    * `--repo=RepoName` - Specify a repo to generate a migration
 
     ## Examples
 
