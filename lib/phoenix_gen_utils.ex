@@ -16,11 +16,15 @@ defmodule Phoenix.Gen.Utils do
 
   @doc "adds a pading to the begining of lines in a string"
   def pad_string(str, padding) when is_binary str do
-     padding <> String.replace(str, ~r/(?!\n$)\n/s, ("\n"<>padding))
+     padding <> String.replace(str, ~r/(?:(?!\n$)\n)/s, ("\n"<>padding))
   end
 
   @doc "returns the enclosing app's name camel case"
   def app_name_camel() do
-    Mix.Utils.camelize Atom.to_string(Mix.Project.config()[:app])
+    Mix.Utils.camelize app_name
+  end
+
+  def app_name() do
+    Atom.to_string Mix.Project.config()[:app]
   end
 end
