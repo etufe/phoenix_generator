@@ -27,4 +27,8 @@ defmodule Phoenix.Gen.Utils do
   def app_name() do
     Atom.to_string Mix.Project.config()[:app]
   end
+
+  def models_path do
+    Path.join ~w|web models|
+  end
 end

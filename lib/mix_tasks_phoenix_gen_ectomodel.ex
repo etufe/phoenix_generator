@@ -1,65 +1,75 @@
 defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   use Mix.Task
   import Phoenix.Gen.Utils
+  import Mix.Generator
 
   @shortdoc "Generate an Ecto Model for a Phoenix Application"
 
   @moduledoc """
   Generates an Ecto Model
 
-      mix phoenix.gen.ectomodel model\_name field\_name:field\_type
+      mix phoenix.gen.ectomodel model_name field_name:field_type
 
     ## Command line options
 
-      * `--timestamps` - adds created_at:datetime and updated_at:datetime fields
-      * `--repo=RepoName` - creates a migration if you specify a repo
+      * `--timestamps` - adds created_at and updated_at to the model
+      * `--repo=RepoName` - the repo to generate a migration for (defaults to `YourApp.Repo`)
+      * `--skip-migration` - do not generate migration
 
     ## Examples
 
       mix phoenix.gen.ectomodel user first_name:string age:integer --timestamps
   """
-  # TODO make AppName.Repo the default
   def run(opts) do
     {switches, [model_name | fields], _files} = OptionParser.parse opts
 
-    if Keyword.get(switches, :timestamps), do:
-      fields = fields ++ ["created_at:datetime", "updated_at:datetime"]
+    timestamps = if Keyword.get(switches, :timestamps), do: "timestamps()"
 
-    bindings = [
-      app_name: app_name_camel,
-      model_name_camel: Mix.Utils.camelize(model_name),
-      model_name_under: model_name,
-      fields: option_to_ecto_fields(fields)
+    model_bindings = [
+      module: Module.concat(app_name_camel, Mix.Utils.camelize(model_name)),
+      fields: fields |> parse_fields |> schema_fields,
+      table_name: Inflex.pluralize(model_name),
+      timestamps: timestamps
     ]
 
-    # generate the model file
-    gen_file(
-      ["ectomodel.ex.eex"],
-      ["models", "#{model_name}.ex"],
-      bindings)
+    model_path = Path.relative_to models_path, Mix.Project.app_path
+    model_file = Path.join model_path, "#{model_name}.ex"
+    create_file model_file, model_template(model_bindings)
 
     # generate the migration
-    import Mix.Shell.IO, only: [info: 1, error: 1]
-    case Keyword.get switches, :repo do
-      nil ->
-        info "Generate a migration with:"
-        info "  mix ecto.gen.migration *your_repo_name* #{migration_name(model_name)}"
-        info "UP:"
-        info "#{migration_up(model_name, option_to_postgres_fields(fields))}"
-        info ""
-        info "DOWN:"
-        info "#{migration_down(model_name)}"
-      repo ->
-        case generate_migration model_name, option_to_postgres_fields(fields), repo do
-          {:error, :no_ecto} ->
-            error "You specified a repo but don't have Ecto."
-            error "Please include ecto in your project dependencies."
-            error "https://github.com/elixir-lang/ecto"
-          :ok ->
-            info "Run your migration with: mix ecto.migrate #{repo}"
-            info "Warning: Migrations are poorly tested, please check before running!"
-        end
-    end
+    # import Mix.Shell.IO, only: [info: 1, error: 1]
+    # case Keyword.get switches, :repo do
+    #   nil ->
+    #     info "Generate a migration with:"
+    #     info "  mix ecto.gen.migration *your_repo_name* #{migration_name(model_name)}"
+    #     info "UP:"
+    #     info "#{migration_up(model_name, option_to_postgres_fields(fields))}"
+    #     info ""
+    #     info "DOWN:"
+    #     info "#{migration_down(model_name)}"
+    #   repo ->
+    #     case generate_migration model_name, option_to_postgres_fields(fields), repo do
+    #       {:error, :no_ecto} ->
+    #         error "You specified a repo but don't have Ecto."
+    #         error "Please include ecto in your project dependencies."
+    #         error "https://github.com/elixir-lang/ecto"
+    #       :ok ->
+    #         info "Run your migration with: mix ecto.migrate #{repo}"
+    #         info "Warning: Migrations are poorly tested, please check before running!"
+    #     end
+    # end
+  end
+
+  defp parse_fields(fields) do
+    for field <- fields, do: String.split(field, ":")
+  end
+
+  defp schema_fields(fields) do
+     for [field, type] <- fields, do: "field :#{field}, :#{type}"
+  end
+
+  defp ecto_fields(fields) do
+     for [field, type] <- fields, do: "add :#{field}, :#{type}"
   end
 
   # Takes ["first_name:string", "age:integer"...]
@@ -69,30 +79,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     for [name | field] <- fields do
       [name] ++ case field do
         []         -> ["string"]
-        "datetime" -> ["datetime, default: Ecto.DateTime.utc"]
-        "date"     -> ["date, default: Ecto.Date.utc"]
-        "time"     -> ["time, default: Ecto.Time.utc"]
         other      -> [other]
-      end
-    end
-  end
-
-  # Takes ["first_name:string", "age:integer"...]
-  # Returns [["first_name", "text"], "age", "bigint"]...]
-  defp option_to_postgres_fields(fields) do
-    #TODO binary, uuid, array, decimal
-    fields = for field <- fields, do: String.split(field, ":")
-    for [name | field] <- fields do
-      [name] ++ case field do
-        []              -> ["text"]
-        "integer"       -> ["bigint"]
-        "float"         -> ["float8"]
-        "boolean"       -> ["boolean"]
-        "string"        -> ["text"]
-        "datetime" <> _ -> ["timestamptz"]
-        "date" <> _     -> ["date"]
-        "time" <> _     -> ["timetz"]
-        other           -> [other]
       end
     end
   end
@@ -144,5 +131,25 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
       "  #{name} #{field} \\\n"
     end
   end
+
+  embed_template :migration, """
+    def change do
+      <%= Enum.join @fields, "\n      " %>
+      <%= @timestamps %>
+    end
+  """
+  embed_template :model, """
+  defmodule <%= @module %> do
+    use Ecto.Model
+    <% IO.inspect "*************" %>
+    <% IO.inspect @fields %>
+
+    schema "<%= @tabel_name %>" do
+      <%= Enum.join @fields, "\n    " %>
+      <%= @timestamps %>
+    end
+
+  end
+  """
 
 end
