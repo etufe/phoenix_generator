@@ -31,4 +31,8 @@ defmodule Phoenix.Gen.Utils do
   def models_path do
     Path.join ~w|web models|
   end
+
+  def migrations_path do
+    Path.join ~w|priv repo migrations|
+  end
 end
