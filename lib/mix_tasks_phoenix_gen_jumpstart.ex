@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Jumpstart do
       # Add the repo worker to supervision tree
       p_path = Path.join ["lib", app_name<>".ex"]
       [_, p_top, p_bot] = Regex.run ~r/(.*children = \[\n)(.*)/s, File.read!(p_path)
-      File.write! p_path, p_top<>"      worker(#{List.last repo}, [])\n"<>p_bot
+      File.write! p_path, p_top<>"      worker(#{List.last repo}, []),\n"<>p_bot
       info "The worker has been added for you!"
 
       # override postgres settings if --postgres-url
