@@ -102,7 +102,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   # returns :ok otherwise
   defp generate_migration(model_name, fields, repo) do
     if Mix.Task.task? Mix.Tasks.Ecto.Gen.Migration do
-      Mix.Task.run Ecto.Gen.Migration, [repo, migration_name(model_name)]
+      Mix.Tasks.Ecto.Gen.Migration.run [repo, migration_name(model_name)]
       #TODO make sure task was successful and we have the right file
       path     = Path.join ~w|priv repo migrations|
       path     = Path.join path, (path |> File.ls! |> List.last)
