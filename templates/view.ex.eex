@@ -1,3 +1,0 @@
-defmodule <%= app_name %>.<%= view_name %>View do
-  use <%= app_name %>.View
-end

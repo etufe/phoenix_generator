@@ -1,5 +1,0 @@
-<div class="well">
-  I am an empty template for
-  <strong><%= controller_name %>.<%= template_name %></strong><br>
-  Find me at: <strong>web/templates/<%=controller_name= %>/<%= template_name %></strong>
-</div>
