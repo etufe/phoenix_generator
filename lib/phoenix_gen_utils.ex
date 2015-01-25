@@ -35,4 +35,8 @@ defmodule Phoenix.Gen.Utils do
   def migrations_path do
     Path.join ~w|priv repo migrations|
   end
+
+  def views_path do
+    Path.relative_to Path.join(~w|web views|), Mix.Project.app_path
+  end
 end
