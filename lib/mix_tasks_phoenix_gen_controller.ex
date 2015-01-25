@@ -1,12 +1,13 @@
 defmodule Mix.Tasks.Phoenix.Gen.Controller do
   use Mix.Task
+  import Mix.Generator
   import Phoenix.Gen.Utils
 
   @shortdoc "Generate a controller for a Phoenix Application"
   @moduledoc """
   Generates a Controller
 
-      mix phoenix.gen.controller controller_name action
+      mix phoenix.gen.controller resource_name action
 
     ## Command line options
 
@@ -20,57 +21,66 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
   """
 
   def run(opts) do
-    {switches, [controller_name | actions], _files} = OptionParser.parse opts
+    {switches, [resource_name | actions], _files} = OptionParser.parse opts
 
-    if Keyword.get switches, :crud do
-      actions = actions ++ ~w[index show new edit create update delete]
+    if switches[:crud] do
+      actions = actions ++ ~w|index show new edit create update delete|
     end
 
     bindings = [
-      app_name: app_name_camel,
-      controller_name: Mix.Utils.camelize(controller_name),
-      actions: actions
+      module: Module.concat(
+        app_name_camel, Mix.Utils.camelize(resource_name<>"Controller")),
+      actions: actions,
+      resource_name: resource_name
     ]
+    file = Path.join controllers_path, resource_name<>".ex"
+    create_file file, controller_template(bindings)
 
-    # generate the controller file
-    gen_file(
-      ["controller.ex.eex"],
-      ["controllers", "#{controller_name}_controller.ex"],
-      bindings)
-
+    # generate the view file
     unless Keyword.get switches, :skip_view do
-      # generate the view file
-      Mix.Tasks.Phoenix.Gen.View.run [controller_name]
-
-      # generate a template for each action
-      if Keyword.get switches, :crud do
-        # do not generate templates for create, update or delete
-        # if they were added wih --crud
-        actions = Enum.take actions, length(actions)-3
-      end
+      Mix.Tasks.Phoenix.Gen.View.run [resource_name]
+      # generate a template for each action but
+      # do not generate templates for create, update or delete
+      # if they were added wih --crud
+      if switches[:crud], do: actions = Enum.take actions, length(actions)-3
       for action <- actions do
-        Mix.Tasks.Phoenix.Gen.Template.run [controller_name, action]
+        Mix.Tasks.Phoenix.Gen.Template.run [resource_name, action]
       end
     end
 
     unless Keyword.get switches, :skip_route do
-      add_resources_route controller_name
+      add_resources_route resource_name
+      Mix.Shell.IO.info "A route was added for this resource."
     end
   end
 
 
-  defp add_resources_route(controller_name) do
-    router_path = Path.join ~w|web router.ex|
-    contents = File.read! router_path
-    # [_ | captures] = Regex.run(~r/(.*pipe_through :browser.*(?!end)\n)(.?end.*)/s,
+  defp add_resources_route(resource_name) do
+    file = Path.join ~w|web router.ex|
+    contents = File.read! file
     [_ | captures] = Regex.run(~r/(.*pipe_through :browser(?(?!end).)*\n)(.*)/s,
                                contents)
-    contents = Enum.join captures, resources_route(controller_name)
-    File.write! router_path, contents
+    contents = Enum.join captures, resources_route(resource_name)
+    File.write! file, contents
   end
 
-  defp resources_route(controller_name) do
-    "    resources \"/#{Inflex.pluralize controller_name}\", " <>
-    "#{Mix.Utils.camelize controller_name}Controller\n"
+  defp resources_route(resource_name) do
+    "    resources \"/#{Inflex.pluralize resource_name}\", " <>
+    "#{Mix.Utils.camelize resource_name}Controller\n"
   end
+
+  embed_template :controller, """
+  defmodule <%= inspect @module %> do
+    use Phoenix.Controller
+
+    plug :action
+
+  <%= for action <- @actions do %>
+    def <%= action %>(conn, _params) do
+      render conn, :<%= action %>
+    end
+  <% end %>
+  end
+  """
+
 end
