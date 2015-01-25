@@ -39,4 +39,8 @@ defmodule Phoenix.Gen.Utils do
   def views_path do
     Path.relative_to Path.join(~w|web views|), Mix.Project.app_path
   end
+
+  def templates_path do
+    Path.relative_to Path.join(~w|web templates|), Mix.Project.app_path
+  end
 end
