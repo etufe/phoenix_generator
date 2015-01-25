@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Jumpstart do
   def run(opts) do
     {switches, _params, _files} = OptionParser.parse opts
     repo = case Keyword.get(switches, :repo) do
-      nil   -> []
+      nil   -> ["--repo", app_name_camel<>".Repo"]
       other -> ["--repo", other]
     end
 
