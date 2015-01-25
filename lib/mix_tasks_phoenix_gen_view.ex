@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Phoenix.Gen.View do
     bindings = [
       module: IO.inspect(
         Module.concat(app_name_camel, Mix.Utils.camelize(view_name<>"View"))),
-      view: IO.inspect(Module.concat(Mix.Utils.camelize(view_name), View))
+      view: IO.inspect(Module.concat(app_name_camel, View))
     ]
     file = Path.join views_path, "#{view_name}.ex"
     create_file file, view_template(bindings)
