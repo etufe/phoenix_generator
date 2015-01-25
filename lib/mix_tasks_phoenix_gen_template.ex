@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Template do
     {_switches, [controller_name | template_name], _files} = OptionParser.parse opts
 
     template_path = Path.join(
-        [templates_path, controller_name, "#{template_name}.html.eex}"])
+        [templates_path, controller_name, "#{template_name}.html.eex"])
 
     bindings = [
       controller: controller_name,
