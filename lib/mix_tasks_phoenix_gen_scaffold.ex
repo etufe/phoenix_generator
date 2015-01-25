@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Scaffold do
       mix phoenix.gen.scaffold resource_name field_name:field_type
 
     ## Command line options
-    * `--repo=RepoName` - Specify a repo to generate a migration
+      * `--repo=RepoName` - the repo to generate a migration for (defaults to `YourApp.Repo`)
 
     ## Examples
 
