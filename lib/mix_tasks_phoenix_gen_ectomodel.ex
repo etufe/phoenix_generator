@@ -27,8 +27,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     timestamps = if switches[:timestamps], do: "timestamps"
 
     model_bindings = [
-      module: IO.inspect(
-        Module.concat(app_name_camel, Mix.Utils.camelize(model_name))),
+      module: Module.concat(app_name_camel, Mix.Utils.camelize(model_name)),
       fields: fields |> parse_fields |> schema_fields,
       table_name: Inflex.pluralize(model_name),
       timestamps: timestamps
@@ -83,7 +82,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     end
   """
   embed_template :model, """
-  defmodule <%= @module %> do
+  defmodule <%= inspect @module %> do
     use Ecto.Model
 
     schema "<%= @table_name %>" do
