@@ -33,7 +33,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       actions: actions,
       resource_name: resource_name
     ]
-    file = Path.join controllers_path, resource_name<>".ex"
+    file = Path.join controllers_path, resource_name<>"_controller.ex"
     create_file file, controller_template(bindings)
 
     # generate the view file
