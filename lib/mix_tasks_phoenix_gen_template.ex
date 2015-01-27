@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Template do
   """
 
   def run(opts) do
-    {_switches, [controller_name | template_name], _files} = OptionParser.parse opts
+    {switches, [controller_name | template_name], _files} = OptionParser.parse opts
 
     template_path = Path.join(
         [templates_path, controller_name, "#{template_name}.html.eex"])
@@ -28,7 +28,12 @@ defmodule Mix.Tasks.Phoenix.Gen.Template do
       template_path: template_path
     ]
 
-    create_file template_path, action_template(bindings)
+    unless switches[:crud] do
+      create_file template_path, action_template(bindings)
+    else
+      create_file template_path, File.read!(Path.join([Mix.Project.deps_path,
+        "phoenix_generator","templates", "#{template_name}_crud.html.eex"]))
+    end
   end
 
   embed_template :action, """

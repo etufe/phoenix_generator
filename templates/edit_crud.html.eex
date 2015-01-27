@@ -1,0 +1,4 @@
+<h3>Edit</h3>
+<div class="well">
+  <%= render __MODULE__, "_form.html", resource: @resource, action: :edit, conn: @conn%>
+</div>

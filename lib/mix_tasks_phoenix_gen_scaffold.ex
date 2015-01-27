@@ -17,8 +17,12 @@ defmodule Mix.Tasks.Phoenix.Gen.Scaffold do
   """
 
   def run(opts) do
-    {_switches, [controller_name | _fields], _files} = OptionParser.parse opts
-    Mix.Tasks.Phoenix.Gen.Controller.run [controller_name, "--crud"]
+    {switches, [resource_name | _fields], _files} = OptionParser.parse opts
+    repo = case switches[:repo] do
+      nil -> []
+      r   -> ["--repo", r]
+    end
+    Mix.Tasks.Phoenix.Gen.Controller.run [resource_name, "--crud"]++repo
     Mix.Tasks.Phoenix.Gen.Ectomodel.run opts
   end
 

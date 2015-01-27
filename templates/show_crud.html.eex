@@ -1,0 +1,4 @@
+<div class="well">
+  <%= render __MODULE__, "_list.html", resources: [@resource], action: :show, conn: @conn %>
+  <a class="btn btn-primary" href="/<%= resource_name %>">Show All</a>
+</div>

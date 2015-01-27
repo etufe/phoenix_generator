@@ -1,0 +1,5 @@
+<div class="well">
+  <%= render __MODULE__, "_list.html", resources: @resources,
+      resource_name: resource_name, action: :index %>
+  <a class="btn btn-primary" href="/<%= resource_name %>/new">New</a>
+</div>

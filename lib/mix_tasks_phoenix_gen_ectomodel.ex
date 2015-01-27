@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
 
     ## Command line options
 
-      * `--timestamps` - adds created_at and updated_at to the model
+      * `--timestamps` - adds inserted_at and updated_at to the model
       * `--repo=RepoName` - the repo to generate a migration for (defaults to `YourApp.Repo`)
       * `--skip-migration` - do not generate migration
 
@@ -24,11 +24,12 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   def run(opts) do
     {switches, [model_name | fields], _files} = OptionParser.parse opts
 
-    timestamps = if switches[:timestamps], do: "timestamps"
+    timestamps = if switches[:timestamps], do: "timestamps", else: false
 
     model_bindings = [
       module: Module.concat(app_name_camel, Mix.Utils.camelize(model_name)),
-      fields: fields |> parse_fields |> schema_fields,
+      schema_fields: fields |> parse_fields |> schema_fields,
+      changeset_fields: fields |> parse_fields |> changeset_fields(timestamps),
       table_name: Inflex.pluralize(model_name),
       timestamps: timestamps
     ]
@@ -69,6 +70,10 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
      for [field, type] <- fields, do: "add :#{field}, :#{type}"
   end
 
+  defp changeset_fields(fields, timestamps) do
+    for [field, type] <- fields, do: field
+  end
+
   defp migration_name(model_name) do
     "create_#{Inflex.pluralize model_name}_table"
   end
@@ -86,8 +91,13 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
     use Ecto.Model
 
     schema "<%= @table_name %>" do
-      <%= Enum.join @fields, "\n    " %>
+      <%= Enum.join @schema_fields, "\n    " %>
       <%= @timestamps %>
+    end
+
+    def changeset(resource, params) do
+      params
+      |> cast resource, [], <%= inspect @changeset_fields %>
     end
 
   end

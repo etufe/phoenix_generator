@@ -1,0 +1,48 @@
+<%= unless Enum.any? @resources do %>
+  <%= if @action == :index do %>
+    There are no resources yet.
+  <% else %>
+    404, not found.<br><br>
+  <% end %>
+<% else %>
+  <% keys = List.first(@resources) |> Map.from_struct |> Map.delete(:__state__) |> Map.keys %>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <%= for key <- keys do %>
+          <th><%= key %></th>
+        <% end %>
+        <%= if @action == :index do %>
+          <th></th>
+        <% end %>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    <%= for resource <- @resources do %>
+      <% resource = Map.from_struct(resource) %>
+      <tr>
+        <%= for key <- keys do %>
+          <td><%= resource[key] %></td>
+        <% end %>
+        <td>
+          <a class="btn btn-warning" href="/<%= resource_name %>/<%= resource[:id] %>/edit">Edit</a>
+        </td>
+        <%= if @action == :index do %>
+          <td>
+            <a class="btn btn-primary" href="/<%= resource_name %>/<%= resource[:id] %>">Show</a>
+          </td>
+        <% else %>
+          <td>
+            <form class="form-inline" action="/<%= resource_name %>/<%= resource[:id] %>" method="POST">
+              <input name="_method" type="hidden" value="delete" />
+              <input type="hidden" name="_csrf_token" value="<%= csrf_token(@conn) %>">
+              <input class="btn btn-danger" type="submit" value="Delete">
+            </form>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>

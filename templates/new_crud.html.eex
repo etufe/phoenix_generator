@@ -1,0 +1,4 @@
+<h3>New</h3>
+<div class="well">
+  <%= render __MODULE__, "_form.html", resource: @resource, action: :create, conn: @conn%>
+</div>

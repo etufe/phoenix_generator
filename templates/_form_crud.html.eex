@@ -1,0 +1,24 @@
+<%= if @action == :create do %>
+  <form action="/<%= resource_name %>" method="POST">
+<% else %>
+  <form action="/<%= resource_name %>/<%= @resource.id %>" method="POST">
+  <input name="_method" type="hidden" value="patch" />
+<% end %>
+  <input type="hidden" name="_csrf_token" value="<%= csrf_token(@conn) %>">
+  <% resource = Map.from_struct @resource %>
+  <% fields =  Map.from_struct(@resource) |> Map.delete(:__state__) |> Map.keys %>
+  <%= for field <- fields, field != :id do %>
+    <div class="form-group">
+      <label for="resource_<%= field %>"><%= field %></label>
+      <input type="text" class="form-control" name="resource[<%= field %>]"
+             id="resource_<%= field %>" value="<%= resource[field]%>" >
+    </div>
+  <% end %>
+  <%= if @action == :create do %>
+    <button type="submit" class="btn btn-default">Create</button>
+    <a class="btn" href="/<%= resource_name %>">Cancel</a>
+  <% else %>
+    <button type="submit" class="btn btn-default">Save</button>
+    <a class="btn" href="/<%= resource_name %>/<%= @resource.id %>">Cancel</a>
+  <% end %>
+</form>
