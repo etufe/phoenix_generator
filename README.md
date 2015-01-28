@@ -4,7 +4,8 @@ A collection of boilerplate generators for the [Phoenix Web Framework](https://g
 https://github.com/etufe/phoenix_generator
 
 ##Setup
- - Add Phoenix Generator and optionally [Ecto](https://github.com/elixir-lang/ecto) and [Postgrex](https://github.com/ericmj/postgrex) to your dependencies
+ - Start a Phoenix project: http://www.phoenixframework.org/v0.8.0/docs
+ - Add Phoenix Generator and optionally [Ecto](https://github.com/elixir-lang/ecto) and [Postgrex](https://github.com/ericmj/postgrex) to your project's dependencies
 
 ```elixir
 defp deps do
