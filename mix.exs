@@ -22,6 +22,8 @@ defmodule PhoenixGenerator.Mixfile do
   end
 
   defp deps do
-    [{:inflex, "~>  0.3.0"}]
+    [{:inflex, "~>  0.3.0"},
+     {:ex_doc, "~> 0.6", only: :dev},
+     {:earmark, ">= 0.0.0", only: :dev}]
   end
 end
