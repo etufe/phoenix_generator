@@ -1,1 +1,1 @@
-%{"inflex": {:git, "https://github.com/itsgreggreg/inflex.git", "b7e43dd93f16fb0e54029ffd1ba7bfbb5d3f3d61", []}}
+%{"inflex": {:hex, :inflex, "0.3.0"}}
