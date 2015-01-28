@@ -7,6 +7,8 @@ defmodule Mix.Tasks.Phoenix.Gen.Jumpstart do
   @moduledoc """
   Generates a repo and database config
 
+      mix phoenix.gen.jumpstart
+
     ## Command line options
     * `--repo=RepoName` - Generates a repo with given name. Default is *AppName*.Repo
     * `--postgres-url=postgres_url` - Overrides postgres setings.

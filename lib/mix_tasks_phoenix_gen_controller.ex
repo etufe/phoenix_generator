@@ -12,9 +12,9 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
     ## Command line options
 
       * `--crud` - adds index, show, new, edit, create, update and delete actions
-      * `--repo' - repo to use with crud (defaults to 'YourApp.Repo')
+      * `--repo` - repo to use with crud (defaults to 'YourApp.Repo')
       * `--skip-view` - don't generate a view or any templates
-      * '--skip-route' - don't add the route if --crud was specified
+      * `--skip-route` - don't add the route if --crud was specified
 
     ## Examples
 
