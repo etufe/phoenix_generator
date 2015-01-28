@@ -61,9 +61,13 @@ end
 
 ```
 
+## Contributing
+Feel free to make pull requests or create github issues. Ecto and Phoenix are both moving targets at the moment and I aim to keep these generators in sync with whatever is in master of those two projects.
+
 ##Todo
   - Replace all resources_path references with the helper
   - There seems to be a bug with `Map.merge(@model.__struct__, params["resource"])`
   - Flash messages
-  - handle Ecto date/times better
-  - keep up with changes
+  - Handle Ecto date/times better
+  - Keep up with changes
+  - Tests
