@@ -1,7 +1,7 @@
 #Phoenix Generator
+A collection of boilerplate generators for the [Phoenix Web Framework](https://github.com/phoenixframework/phoenix).
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/etufe/phoenix_generator?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-A collection of boilerplate generators for the [Phoenix Web Framework](https://github.com/phoenixframework/phoenix).
 
 https://github.com/etufe/phoenix_generator
 
