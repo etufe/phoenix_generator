@@ -51,6 +51,7 @@ Let's use the generators to create a simple notes app.
  - navigate to http://localhost:4000/notes
 
 ## Caveats
+ - At the moment this project is only meant to work with the most recent versions of Ecto and Phoenix on github.
  - Ecto doesn't currently support `datetime`s being inserted directly into html. If you want this functionality, say by using the `--timestamps` flag when running the `scaffold` generator, create a file called `lib/ecto_datetime_html_safe.ex` with the contens:
 ```elixir
 defimpl Phoenix.HTML.Safe, for: Ecto.DateTime do
