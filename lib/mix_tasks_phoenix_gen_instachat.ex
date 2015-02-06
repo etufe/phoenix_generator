@@ -49,12 +49,15 @@ defmodule Mix.Tasks.Phoenix.Gen.Instachat do
     Mix.Shell.IO.info "Your config/config.exs was edited."
     Mix.Shell.IO.info "An ets table will be started to manage nicknames.\n"
 
+    # For some reason router changes don't trigger a recompile
+    # so we must manually clean the projec
     Mix.Tasks.Clean.run []
 
     Mix.Shell.IO.info """
     A chat room has been generated.
     Run: mix phoenix.server
     Visit: http://localhost:4000/instachat
+    It takes a minute for the chat to start working, I'm not sure why. :/
     """
   end
 

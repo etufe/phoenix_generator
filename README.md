@@ -48,7 +48,6 @@ Let's use the generators to create a simple notes app.
  - run `mix ecto.create`
  - run `mix phoenix.gen.scaffold note title:string body:string`
  - run `mix ecto.migrate`
- - run `mix clean`
  - run `mix phoenix.server`
  - navigate to http://localhost:4000/notes
 

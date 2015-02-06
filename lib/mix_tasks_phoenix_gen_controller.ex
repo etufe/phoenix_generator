@@ -60,6 +60,10 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
         Mix.Shell.IO.info "A route was added for #{resource_name}/#{action}"
       end
     end
+
+    # For some reason router changes don't trigger a recompile
+    # so we must manually clean the projec
+    Mix.Tasks.Clean.run []
   end
 
 
