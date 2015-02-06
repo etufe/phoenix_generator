@@ -28,4 +28,9 @@ defmodule Phoenix.Gen.Utils do
   def controllers_path do
     Path.relative_to Path.join(~w|web controllers|), Mix.Project.app_path
   end
+
+  def channels_path do
+    Path.relative_to Path.join(~w|web channels|), Mix.Project.app_path
+  end
+
 end
