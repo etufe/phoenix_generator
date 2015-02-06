@@ -31,12 +31,14 @@ run a generator: `mix phoenix.gen.some_generator`
 
 get help and options: `mix help phoenix.gen.some_generator`
 
- - **jumpstart** requires ecto: Sets up a repo and database config
- - **scaffold** requires ecto: Generates a Controller/Model/View/Template scaffold
- - **controller** : Generates a controller and optionally sets up a view, actions and templates
+ - **jumpstart** requires ecto: Sets up a repo and database config.
+ - **scaffold** requires ecto: Generates a Controller/Model/View/Template scaffold.
+ - **controller** : Generates a controller and optionally sets up a view, actions and templates.
  - **view**: generates a view class
- - **ectomodel** requires ecto: Generates a model optionally with fields and a migration
- - **template**: Generates an empty template for the given action
+ - **ectomodel** requires ecto: Generates a model optionally with fields and a migration.
+ - **template**: Generates an empty template for the given action.
+ - **channel**: Generates an empty Channel and optionally the route.
+ - **instachat**: Generates a chatroom as a channel demo.
 
 ## Putting it all together
 Let's use the generators to create a simple notes app.
@@ -64,6 +66,16 @@ end
 
 ```
 
+## Trying out Channels / Instachat
+The instachat generator generates a functioning chat with multiple rooms and basic nickname management. It uses an ets table to store the nicknames.
+
+ - Create a phoenix application.
+ - Add `phoenix_generator` to your dependencies.
+ - run `mix phoenix.gen.instachat`
+ - run `mix phoenix.server`
+ - navigate to http://localhost:4000/instachat
+ - Look around web/channels/instachat.exs and web/templates/instachat/index.html.eex
+
 ## Contributing
 Feel free to make pull requests or create github issues. Ecto and Phoenix are both moving targets at the moment and I aim to keep these generators in sync with whatever is in master of those two projects.
 
@@ -74,3 +86,4 @@ Feel free to make pull requests or create github issues. Ecto and Phoenix are bo
   - Handle Ecto date/times better
   - Keep up with changes
   - Tests
+  - Chat takes a minute to start working, find out why.
