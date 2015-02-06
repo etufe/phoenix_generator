@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       * `--crud` - adds index, show, new, edit, create, update and delete actions
       * `--repo` - repo to use with crud (defaults to 'YourApp.Repo')
       * `--skip-view` - don't generate a view or any templates
-      * `--skip-route` - don't add the route if --crud was specified
+      * `--skip-route` - don't add the route for actions or --crud
 
     ## Examples
 
@@ -49,25 +49,49 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       end
     end
 
-    if switches[:crud] && !switches[:skip_route] do
-      add_resources_route resource_name
-      Mix.Shell.IO.info "A route was added for this resource."
+    unless switches[:skip_route] do
+      if switches[:crud] do
+        add_resources_route resource_name
+        Mix.Shell.IO.info "A route was added for this resource."
+      end
+
+      for action <- actions do
+        add_action_route(resource_name, action)
+        Mix.Shell.IO.info "A route was added for #{resource_name}/#{action}"
+      end
     end
   end
 
 
+  defp add_action_route(resource_name, action) do
+    bindings = [
+      controller_path: resource_name,
+      action_path: (if action == "index", do: "", else: "/"<>action ),
+      action: action,
+      controller_name: Mix.Utils.camelize(resource_name)<>"Controller"
+    ]
+    add_route action_route_template(bindings)
+  end
+
   defp add_resources_route(resource_name) do
-    file = Path.join ~w|web router.ex|
+    bindings = [
+      resources_name: Inflex.pluralize(resource_name),
+      controller_name: Mix.Utils.camelize(resource_name)<>"Controller"
+    ]
+    add_route resources_route_template(bindings)
+  end
+
+  defp add_route(route) do
+    file     = Path.join ~w|web router.ex|
     contents = File.read! file
-    [_ | captures] = Regex.run(~r/(.*pipe_through :browser(?(?!end).)*\n)(.*)/s,
-                               contents)
-    contents = Enum.join captures, resources_route(resource_name)
+    [_ | captures] = Regex.run(router_regex, contents)
+    contents = Enum.join captures, route
     File.write! file, contents
   end
 
-  defp resources_route(resource_name) do
-    "    resources \"/#{Inflex.pluralize resource_name}\", " <>
-    "#{Mix.Utils.camelize resource_name}Controller\n"
+
+  defp router_regex do
+    ~r/(.*pipe_through :browser(?(?!end).)*\n)(.*)/s
   end
 
   embed_template :controller, """
@@ -129,6 +153,14 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
     end
   <% end %>
   end
+  """
+
+  embed_template :resources_route, """
+      resources "/<%= @resources_name %>", <%= @controller_name %>
+  """
+
+  embed_template :action_route, """
+      get "/<%= @controller_path %><%= @action_path %>", <%= @controller_name %>, :<%= @action %>
   """
 
 end
