@@ -49,7 +49,7 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       end
     end
 
-    unless Keyword.get switches, :skip_route do
+    if switches[:crud] && !switches[:skip_route] do
       add_resources_route resource_name
       Mix.Shell.IO.info "A route was added for this resource."
     end
