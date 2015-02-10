@@ -3,7 +3,7 @@ defmodule PhoenixGenerator.Mixfile do
 
   def project do
     [app: :phoenix_generator,
-     version: "0.1.0",
+     version: "0.2.0",
      elixir: "~> 1.0",
      description: "A collection of boilerplate generators for the Phoenix web framework.",
      package: package,
