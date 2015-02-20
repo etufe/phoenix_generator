@@ -61,9 +61,6 @@ defmodule Mix.Tasks.Phoenix.Gen.Controller do
       end
     end
 
-    # For some reason router changes don't trigger a recompile
-    # so we must manually clean the projec
-    Mix.Tasks.Clean.run []
   end
 
 
