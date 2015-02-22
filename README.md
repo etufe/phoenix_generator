@@ -85,7 +85,5 @@ Feel free to make pull requests or create github issues. Ecto and Phoenix are bo
   - Replace all resources_path references with the helper
   - There seems to be a bug with `Map.merge(@model.__struct__, params["resource"])`
   - Flash messages
-  - Handle Ecto date/times better
   - Keep up with changes
   - Tests
-  - Chat takes a minute to start working, find out why.
