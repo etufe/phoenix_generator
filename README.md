@@ -1,7 +1,7 @@
+__DEPRECATED: The functionality of these generators is now mostly built into Phoneix and the rest have not been updated in quite some time!__
+
 #Phoenix Generator
 A collection of boilerplate generators for the [Phoenix Web Framework](https://github.com/phoenixframework/phoenix).
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/etufe/phoenix_generator?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 https://hex.pm/packages/phoenix_generator
 
