@@ -63,8 +63,11 @@ defmodule Mix.Tasks.Phoenix.Gen.Ectomodel do
   end
 
   defp schema_fields(fields) do
-     for [field, type] <- fields, do: "field :#{field}, :#{type}"
+     for [field, type] <- fields, do: "field :#{field}, :#{field_type(type)}"
   end
+
+  defp field_type("text"), do: "string"
+  defp field_type(type), do: type
 
   defp migration_fields(fields) do
      for [field, type] <- fields, do: "add :#{field}, :#{type}"
